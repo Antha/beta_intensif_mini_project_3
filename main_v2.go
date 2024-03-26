@@ -67,7 +67,7 @@ func Menu()  {
 	case 2:
 		ViewBook()
 	case 3:
-		//EditBook()
+		EditBook()
 	case 4:
 		//DeleteBook()
 	case 5:
@@ -232,4 +232,131 @@ func AddBook() {
 	} 
 
 	fmt.Println("Berhasil Menambah Buku!")
+}
+
+func EditBook() {
+	inputanUser := bufio.NewReader(os.Stdin)
+	isbn := ""
+	penulis := ""
+	judul := ""
+	gambar := ""
+
+	fmt.Print("Silahkan Masukan ID Buku Yang Mau Diedit : ")
+	idInput, _ := inputanUser.ReadString('\n')
+	idInput = strings.TrimSpace(idInput)
+	idInput = strings.Replace(idInput, "\n", "", 1)
+	idInput = strings.Replace(idInput, "\r", "", 1)
+	// Convert tahunInput to an integer
+	id, err := strconv.Atoi(idInput)
+	if err != nil {
+		fmt.Println("Error converting input to integer:", err)
+		// Handle the error appropriately, such as asking the user to input again
+	}
+
+
+	fmt.Print("Silahkan Masukan ISBN Buku : ")
+		isbn, _ = inputanUser.ReadString('\n')
+		isbn = strings.TrimSpace(isbn)
+		isbn = strings.Replace(
+			isbn,
+			"\n",
+			"",
+			1)
+		isbn = strings.Replace(
+			isbn,
+			"\r",
+			"",
+			1)
+
+	fmt.Print("Silahkan Masukan Penulis : ")
+		penulis, _ = inputanUser.ReadString('\n')
+		penulis = strings.TrimSpace(penulis)
+		penulis = strings.Replace(
+			penulis,
+			"\n",
+			"",
+			1)
+		penulis = strings.Replace(
+			penulis,
+			"\r",
+			"",
+			1)
+
+	fmt.Print("Silahkan Masukan Tahun Terbit : ")
+	tahunInput, _ := inputanUser.ReadString('\n')
+	tahunInput = strings.TrimSpace(tahunInput)
+	tahunInput = strings.Replace(tahunInput, "\n", "", 1)
+	tahunInput = strings.Replace(tahunInput, "\r", "", 1)
+	
+	// Convert tahunInput to an integer
+	tahun, err := strconv.Atoi(tahunInput)
+	if err != nil {
+		fmt.Println("Error converting input to integer:", err)
+		// Handle the error appropriately, such as asking the user to input again
+	}
+
+	// Memeriksa apakah kode buku sudah digunakan sebelumnya
+	fmt.Print("Silahkan Masukan Judul : ")
+	judul, _ = inputanUser.ReadString('\n')
+	judul = strings.TrimSpace(judul)
+	judul = strings.Replace(
+		judul,
+		"\n",
+		"",
+		1)
+	judul = strings.Replace(
+		judul,
+		"\r",
+		"",
+		1)
+
+	
+	fmt.Print("Silahkan Masukan Link Gambar : ")
+	gambar, _ = inputanUser.ReadString('\n')
+	gambar = strings.TrimSpace(gambar)
+	gambar = strings.Replace(
+		gambar,
+		"\n",
+		"",
+		1)
+	gambar = strings.Replace(
+		gambar,
+		"\r",
+		"",
+		1)
+
+	fmt.Print("Silahkan Masukan Jumlah Stok : ")
+	stokInput, _ := inputanUser.ReadString('\n')
+	stokInput = strings.TrimSpace(stokInput)
+	stokInput = strings.Replace(stokInput, "\n", "", 1)
+	stokInput = strings.Replace(stokInput, "\r", "", 1)
+	
+	// Convert pageInput to an integer
+	stok, err := strconv.Atoi(stokInput)
+	if err != nil {
+		fmt.Println("Error converting input to integer:", err)
+		// Handle the error appropriately
+	}
+
+	fmt.Println("")
+	
+	book := model.Book{
+		ID: uint(id),
+		ISBN:  isbn,
+		Penulis: penulis,
+		Tahun: uint(tahun),
+		Judul: judul,
+		Gambar: gambar,
+		Stok : uint(stok),
+	}
+
+
+	err = book.UpdateOne(config.Mysql.DB)
+	if err != nil{
+		log.Fatal(err)
+	}	
+
+	fmt.Printf("Berhasil Mengedit Buku Dengan id %d! \n",id)
+
+	Menu()
 }
