@@ -34,6 +34,7 @@ func TestDeleteAllBook(t *testing.T) {
 
 	assert.Nil(t, err)
 }
+
 func TestCreateBook(t *testing.T)  {
 	Init()
 

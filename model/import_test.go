@@ -30,7 +30,7 @@ func TestImport(t *testing.T){
 	fmt.Println(books)
 
 	for _, book := range books {
-		err = book.Create(config.Mysql.DB)
+		err = book.Save(config.Mysql.DB)
 	}
 	
 

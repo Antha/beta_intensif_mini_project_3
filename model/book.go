@@ -30,6 +30,16 @@ func (cr *Book) Create(db *gorm.DB) error {
 	return nil
 }
 
+func (cr *Book) Save(db *gorm.DB) error {
+	err := db.Model(Book{}).Save(&cr).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (cr *Book) GetAll(db *gorm.DB) ([]Book, error) {
 	res := [] Book{}
 	

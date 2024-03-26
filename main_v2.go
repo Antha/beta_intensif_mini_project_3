@@ -4,11 +4,13 @@ import (
 	// "bufio"
 	// "encoding/json"
 	"bufio"
+	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
 	"sekolahbeta/hacker/mini_project3/config"
 	"sekolahbeta/hacker/mini_project3/model"
+	"sekolahbeta/hacker/mini_project3/utils"
 	"strconv"
 	"strings"
 
@@ -51,7 +53,8 @@ func Menu()  {
 	fmt.Println("2. Lihat Daftar Buku")
 	fmt.Println("3. Edit Buku")
 	fmt.Println("4. Hapus Buku")
-	fmt.Println("5. Keluar")
+	fmt.Println("5. Import CSV")
+	fmt.Println("6. Keluar")
 	fmt.Println("=================================")
 	fmt.Print("Masukan Pilihan : ")
 	_, err := fmt.Scanln(&pilihanMenu)
@@ -69,8 +72,10 @@ func Menu()  {
 	case 3:
 		EditBook()
 	case 4:
-		//DeleteBook()
+		DeleteBook()
 	case 5:
+		Import()
+	case 6:
 		os.Exit(0)
 	}
 
@@ -357,6 +362,70 @@ func EditBook() {
 	}	
 
 	fmt.Printf("Berhasil Mengedit Buku Dengan id %d! \n",id)
+
+	Menu()
+}
+
+func DeleteBook(){
+	inputanUser := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Silahkan Masukan ID Buku Yang Mau Dihapus : ")
+	idInput, _ := inputanUser.ReadString('\n')
+	idInput = strings.TrimSpace(idInput)
+	idInput = strings.Replace(idInput, "\n", "", 1)
+	idInput = strings.Replace(idInput, "\r", "", 1)
+	// Convert tahunInput to an integer
+	id, err := strconv.Atoi(idInput)
+	if err != nil {
+		fmt.Println("Error converting input to integer:", err)
+		// Handle the error appropriately, such as asking the user to input again
+	}
+
+	book := model.Book{
+		ID: uint(id),
+	}
+
+	err = book.DeleteByID(config.Mysql.DB)
+
+	if(err != nil){
+		log.Fatal(err)
+	}
+
+	fmt.Println("Berhasil Menghapus Buku!")
+
+	Menu()
+}
+
+func Import(){
+	inputanUser := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Silahkan Masukan Directory FIle .csv (exm: D:\\my_car.csv) : ")
+	directory, _ := inputanUser.ReadString('\n')
+	directory = strings.TrimSpace(directory)
+	directory = strings.Replace(directory, "\n", "", 1)
+	directory = strings.Replace(directory, "\r", "", 1)
+
+	fmt.Println(directory)
+
+	fileCsv, err := os.Open(directory)
+	
+	defer fileCsv.Close()
+
+	reader := csv.NewReader(fileCsv)
+
+	records, err := reader.ReadAll()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	books := utils.CsvToStruct(records)
+	//fmt.Println(books)
+	for _, book := range books {
+		err = book.Save(config.Mysql.DB)
+	}
+
+	fmt.Println("Berhasil Mengimport File CSV!")
 
 	Menu()
 }
